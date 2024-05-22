@@ -47,7 +47,7 @@ static emacs_value transpose(emacs_env* env, ptrdiff_t nargs, emacs_value args[]
   extract_matrix_shape(shape, env, args[0]);
   
   double matrix[shape[0]][shape[1]];
-  extract_matrix(matrix, env, args[0], shape);
+  extract_matrix((double*) matrix, env, args[0], shape);
 
   emacs_value rows[shape[1]];
 
@@ -75,7 +75,7 @@ static emacs_value add(emacs_env* env, ptrdiff_t nargs, emacs_value args[], void
   extract_matrix_shape(m1_shape, env, args[0]);
 
   double m1[m1_shape[0]][m1_shape[1]];
-  extract_matrix(m1, env, args[0], m1_shape);
+  extract_matrix((double*) m1, env, args[0], m1_shape);
 
   /* Array that will hold the final result */
   double result[m1_shape[0]][m1_shape[1]];
@@ -88,7 +88,7 @@ static emacs_value add(emacs_env* env, ptrdiff_t nargs, emacs_value args[], void
      them up cumulatively */
   for(int m=1; m < nargs; m++){
 
-    extract_matrix(matrix_m, env, args[m], m1_shape);
+    extract_matrix((double*) matrix_m, env, args[m], m1_shape);
 
     for(int i=0; i < m1_shape[0]; i++){
       for(int j=0; j < m1_shape[1]; j++){
@@ -131,14 +131,14 @@ static emacs_value subtract(emacs_env* env, ptrdiff_t nargs, emacs_value args[],
 
 
   double m1[m1_shape[0]][m1_shape[1]];
-  extract_matrix(m1, env, args[0], m1_shape);
+  extract_matrix((double*) m1, env, args[0], m1_shape);
     
   double result[m1_shape[0]][m1_shape[1]];
 
   double matrix_m[m1_shape[0]][m1_shape[1]];
   for(int m=1; m < nargs; m++){
 
-    extract_matrix(matrix_m, env, args[m], m1_shape);
+    extract_matrix((double*) matrix_m, env, args[m], m1_shape);
 
     for(int i=0; i < m1_shape[0]; i++){
       for(int j=0; j < m1_shape[1]; j++){
@@ -183,14 +183,14 @@ static emacs_value hadamard(emacs_env* env, ptrdiff_t nargs, emacs_value args[],
 
 
   double m1[m1_shape[0]][m1_shape[1]];
-  extract_matrix(m1, env, args[0], m1_shape);
+  extract_matrix((double*) m1, env, args[0], m1_shape);
     
   double result[m1_shape[0]][m1_shape[1]];
 
   double matrix_m[m1_shape[0]][m1_shape[1]];
   for(int m=1; m < nargs; m++){
 
-    extract_matrix(matrix_m, env, args[m], m1_shape);
+    extract_matrix((double*) matrix_m, env, args[m], m1_shape);
 
     for(int i=0; i < m1_shape[0]; i++){
       for(int j=0; j < m1_shape[1]; j++){
@@ -233,7 +233,7 @@ static emacs_value scalar_multiply(emacs_env* env, ptrdiff_t nargs, emacs_value 
   extract_matrix_shape(shape, env, args[1]);
   
   double matrix[shape[0]][shape[1]];
-  extract_matrix(matrix, env, args[1], shape);
+  extract_matrix((double*) matrix, env, args[1], shape);
 
   emacs_value rows[shape[0]];
 
@@ -263,13 +263,13 @@ static emacs_value matmul(emacs_env* env, ptrdiff_t nargs, emacs_value args[], v
   extract_matrix_shape(m1_shape, env, args[0]);
 
   double m1[m1_shape[0]][m1_shape[1]];
-  extract_matrix(m1, env, args[0], m1_shape);
+  extract_matrix((double*) m1, env, args[0], m1_shape);
 
   /* Declare pointers to the result of the multiplication of the
      previous 2 argument matrices. Initially, this just points to the
      first matrix */
   size_t* m_prev_shape = m1_shape;
-  double* m_prev = m1;
+  double* m_prev = (double*) m1;
 
 
   /* Will hold the result of the multiplication of the previous result
@@ -277,14 +277,13 @@ static emacs_value matmul(emacs_env* env, ptrdiff_t nargs, emacs_value args[], v
   double* result_m;
   result_m = NULL;
 
-  double final_ncols;
   for(int m=1; m < nargs; m++){
 
     /* Get the shape and load the m-th matrix */
     size_t matrix_m_shape[2];
     extract_matrix_shape(matrix_m_shape, env, args[m]);
     double matrix_m[matrix_m_shape[0]][matrix_m_shape[1]];
-    extract_matrix(matrix_m, env, args[m], matrix_m_shape);
+    extract_matrix((double*) matrix_m, env, args[m], matrix_m_shape);
 
     /* Construct the shape of the resulting matrix. Generally,
        multiplying a m x n matrix with a n x p matrix results in a m x

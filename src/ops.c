@@ -16,7 +16,7 @@ static emacs_value softmax(emacs_env* env, ptrdiff_t nargs, emacs_value args[], 
   extract_matrix_shape(m_shape, env, args[0]);
 
   double m[m_shape[0]][m_shape[1]];
-  extract_matrix(m, env, args[0], m_shape);
+  extract_matrix((double*) m, env, args[0], m_shape);
 
   size_t axis = 1;              /* Default axis to sum over is 1 */
   if(nargs == 2) {
@@ -83,7 +83,7 @@ static emacs_value reduce_sum(emacs_env* env, ptrdiff_t nargs, emacs_value args[
   extract_matrix_shape(m_shape, env, args[0]);
 
   double m[m_shape[0]][m_shape[1]];
-  extract_matrix(m, env, args[0], m_shape);
+  extract_matrix((double*) m, env, args[0], m_shape);
 
   size_t axis = (size_t) env->extract_integer(env, args[1]);
 
@@ -142,7 +142,7 @@ static emacs_value reduce_mean(emacs_env* env, ptrdiff_t nargs, emacs_value args
   extract_matrix_shape(m_shape, env, args[0]);
 
   double m[m_shape[0]][m_shape[1]];
-  extract_matrix(m, env, args[0], m_shape);
+  extract_matrix((double*) m, env, args[0], m_shape);
 
   size_t axis = (size_t) env->extract_integer(env, args[1]);
 
@@ -205,7 +205,7 @@ static emacs_value relu(emacs_env* env, ptrdiff_t nargs, emacs_value args[], voi
   extract_matrix_shape(m_shape, env, args[0]);
 
   double m[m_shape[0]][m_shape[1]];
-  extract_matrix(m, env, args[0], m_shape);
+  extract_matrix((double*) m, env, args[0], m_shape);
 
   size_t nrows = m_shape[0];
   size_t ncols = m_shape[1];
@@ -234,7 +234,7 @@ static emacs_value heaviside(emacs_env* env, ptrdiff_t nargs, emacs_value args[]
   extract_matrix_shape(m_shape, env, args[0]);
 
   double m[m_shape[0]][m_shape[1]];
-  extract_matrix(m, env, args[0], m_shape);
+  extract_matrix((double*) m, env, args[0], m_shape);
 
   size_t nrows = m_shape[0];
   size_t ncols = m_shape[1];
@@ -262,7 +262,7 @@ static emacs_value natural_log(emacs_env* env, ptrdiff_t nargs, emacs_value args
   extract_matrix_shape(m_shape, env, args[0]);
 
   double m[m_shape[0]][m_shape[1]];
-  extract_matrix(m, env, args[0], m_shape);
+  extract_matrix((double*) m, env, args[0], m_shape);
 
   size_t nrows = m_shape[0];
   size_t ncols = m_shape[1];
@@ -290,7 +290,7 @@ static emacs_value identity(emacs_env* env, ptrdiff_t nargs, emacs_value args[],
   extract_matrix_shape(m_shape, env, args[0]);
 
   double m[m_shape[0]][m_shape[1]];
-  extract_matrix(m, env, args[0], m_shape);
+  extract_matrix((double*) m, env, args[0], m_shape);
 
   size_t nrows = m_shape[0];
   size_t ncols = m_shape[1];
