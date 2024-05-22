@@ -1,0 +1,64 @@
+#+title: =nn.el= Building and Training Neural Networks in Emacs Lisp
+#+author: Mohamed Suliman                
+#+email: sulimanm@tcd.ie
+#+language: en
+#+options: ':t toc:nil author:t email:t num:t
+* Overview
+
+=nn.el= is a zero dependancy emacs lisp library to build and train
+neural networks.
+* Installation
+
+Firstly clone the directory, and then run =make= to build the emacs
+modules =matrix.c= and =ops.c=. Then add the directory to your load
+path with something like
+
+#+begin_src emacs-lisp
+(add-to-list 'load-path "~/where/you/cloned")
+#+end_src
+* Usage
+Below is an example on how to train a (relatively large) neural
+network on some randomly generated data
+
+#+begin_src emacs-lisp
+(require 'nn)
+(require 'matrix)
+(require 'ops)
+
+(setq model `(,(nn-layer 100 80 'ops-relu)
+              ,(nn-layer 80 10 'ops-relu)
+              ,(nn-layer 10 8 'ops-relu)
+              ,(nn-layer 8 3)))
+
+
+(setq x (matrix-random 100 2))
+(setq y (matrix-transpose (vconcat [[1 0 0]] [[0 0 1]])))
+
+(let* ((s (ops-softmax (nn-forward-layers x model)))
+      (loss (nn-crossentropy y s)))
+  (message "Initial loss: %s" loss))
+         
+
+
+(defun nn--apply-gradient-sgd-layer (grad layer)
+  "Apply GRAD to LAyER using gradient descent"
+  (let ((w (nth 0 layer))
+        (b (nth 1 layer))
+        (wg (nth 0 grad))
+        (bg (nth 1 grad)))
+    (setf (nth 0 layer) (matrix-subtract w (matrix-scalar-mul 0.01 wg)))
+    (setf (nth 1 layer) (matrix-subtract b (matrix-scalar-mul 0.01 bg)))))
+
+(dotimes (counter  100)
+  ;; this is the train step; essentially just do this as many times
+  (let ((grads (nn-gradient x y model)))
+    (seq-mapn #'nn--apply-gradient-sgd-layer grads model)))
+
+(let* ((s (ops-softmax (nn-forward-layers x model)))
+      (loss (nn-crossentropy y s)))
+  (message "after training loss: %s" loss))
+#+end_src
+
+
+
+
